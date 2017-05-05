@@ -44,24 +44,31 @@ ggplot(overall_means, mapping = aes(x = index, y = overall_mean, color = "red"))
 ```
 
 ```{r q2 means approx normal}
-means_count <- length(tmp_means)
-means_df <- data.frame(row = means_count, means = tmp_means, cond = 1)
-theoretical <- data.frame(y = rnorm(means_count, mean = 5, sd = 5))
 
-ggplot(means_df, mapping = aes(x = means, fill = cond)) +
+
+means_df_list<- vector("list", length = 5)
+  for(i in 1:5) {
+    means_df_list[[i]] <- data.frame(row = 1:length(all_the_means[[i*4]]), means = all_the_means[[i*4]], cond = i)
+  }
+  
+means_count <- lapply(all_the_means,length)
+theoretical <- lapply(means_count, rnorm, mean = 5, sd = 5)
+
+ggplot(means_df_list[[5]], mapping = aes(x = means, fill = cond)) +
   coord_cartesian(xlim = c(2,8)) +
   geom_density(alpha = 0.3) + 
   geom_vline(aes(xintercept = 5)) +
   stat_function(fun = dnorm, color = "red", args = list(mean = 5, sd = 5/sqrt(40))) +
   guides(fill = "none")
+
 ```
 
 
-```{r}
-theoretical_vs_real<- lm(means_df$means ~ theoretical$y)
+```{r q-q plot}
+ggplot(means_df_list[[5]], mapping = aes(sample = means)) +
+  coord_cartesian(ylim = c(1,10), xlim = c(-5.5,5.5)) +
+  geom_qq() +
+  geom_abline(intercept = mean(theoretical[[21]]), slope = sd(theoretical[[21]])/sqrt(40))
 
-par(mfrow = c(2,2), oma = c(0,0,4,0))
-plot(theoretical_vs_real) 
-title(main = "Figure 3: Final Model Diagnostics",  outer = TRUE)
 ```
 
