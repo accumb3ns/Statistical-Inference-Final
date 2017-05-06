@@ -180,6 +180,51 @@ library(dplyr)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="executive-summary" class="section level2">
+<h2>Executive Summary</h2>
+<p>Here, we examine the effect of vitamin supplementation on tooth growth in guinea pigs. Vitamin C increased odontoblast length in a dose-dependent fashion. Orange juice was a more effective source of Vitamin C at lower doses, but at the highest dose there was no difference between orange juice vs ascorbic acid.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3RyKFRvb3RoR3Jvd3RoKVxuXG5gYGAifQ== -->
+<pre class="r"><code>str(ToothGrowth)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiJ2RhdGEuZnJhbWUnOlx0NjAgb2JzLiBvZiAgMyB2YXJpYWJsZXM6XG4gJCBsZW4gOiBudW0gIDQuMiAxMS41IDcuMyA1LjggNi40IDEwIDExLjIgMTEuMiA1LjIgNyAuLi5cbiAkIHN1cHA6IEZhY3RvciB3LyAyIGxldmVscyBcIk9KXCIsXCJWQ1wiOiAyIDIgMiAyIDIgMiAyIDIgMiAyIC4uLlxuICQgZG9zZTogbnVtICAwLjUgMC41IDAuNSAwLjUgMC41IDAuNSAwLjUgMC41IDAuNSAwLjUgLi4uXG4ifQ== -->
+<pre><code>'data.frame':   60 obs. of  3 variables:
+ $ len : num  4.2 11.5 7.3 5.8 6.4 10 11.2 11.2 5.2 7 ...
+ $ supp: Factor w/ 2 levels &quot;OJ&quot;,&quot;VC&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+ $ dose: num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShUb290aEdyb3d0aClcblxuYGBgIn0= -->
+<pre class="r"><code>summary(ToothGrowth)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgbGVuICAgICAgICBzdXBwICAgICAgICAgZG9zZSAgICAgIFxuIE1pbi4gICA6IDQuMjAgICBPSjozMCAgIE1pbi4gICA6MC41MDAgIFxuIDFzdCBRdS46MTMuMDcgICBWQzozMCAgIDFzdCBRdS46MC41MDAgIFxuIE1lZGlhbiA6MTkuMjUgICAgICAgICAgIE1lZGlhbiA6MS4wMDAgIFxuIE1lYW4gICA6MTguODEgICAgICAgICAgIE1lYW4gICA6MS4xNjcgIFxuIDNyZCBRdS46MjUuMjcgICAgICAgICAgIDNyZCBRdS46Mi4wMDAgIFxuIE1heC4gICA6MzMuOTAgICAgICAgICAgIE1heC4gICA6Mi4wMDAgIFxuIn0= -->
+<pre><code>      len        supp         dose      
+ Min.   : 4.20   OJ:30   Min.   :0.500  
+ 1st Qu.:13.07   VC:30   1st Qu.:0.500  
+ Median :19.25           Median :1.000  
+ Mean   :18.81           Mean   :1.167  
+ 3rd Qu.:25.27           3rd Qu.:2.000  
+ Max.   :33.90           Max.   :2.000  </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW5pcXVlKFRvb3RoR3Jvd3RoJGRvc2UpXG5cbmBgYCJ9 -->
+<pre class="r"><code>unique(ToothGrowth$dose)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNSAxLjAgMi4wXG4ifQ== -->
+<pre><code>[1] 0.5 1.0 2.0</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBUb290aEdyb3d0aCwgbWFwcGluZyA9IGFlcyh4ID0gZG9zZSwgeSA9IGxlbiwgY29sb3IgPSBzdXBwKSkgKyBcbiAgICBzY2FsZV94X2xvZzEwKCkgK1xuICAgIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9IFwiU2V0MVwiKSArXG4gICAgZ2VvbV9wb2ludCgpICsgXG4gICAgZ2VvbV9zbW9vdGgobWV0aG9kID0gXCJsbVwiKSArXG4gICAgbGFicyh0aXRsZSA9IFwiRWZmZWN0IG9mIHZpdGFtaW4gQyBzdXBwbGVtZW50YXRpb24gb24gdG9vdGggZ3Jvd3RoIGluIGd1aW5lYSBwaWdzXCIsIHggPSBcImxvZyBEb3NlIChtZy9kYXkpXCIsIHkgPSBcIk9kb250b2JsYXN0IExlbmd0aCAobWljcm9ucylcIikgKyBcbiAgICB0aGVtZShwbG90LnRpdGxlID0gZWxlbWVudF90ZXh0KGhqdXN0ID0gMC41KSlcbmBgYCJ9 -->
@@ -197,8 +242,46 @@ library(dplyr)</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9vdGhfZml0XG5cbmBgYCJ9 -->
+<pre class="r"><code>tooth_fit
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxubG0oZm9ybXVsYSA9IGxlbiB+IGxvZyhkb3NlKSAqIHN1cHAsIGRhdGEgPSBUb290aEdyb3d0aClcblxuQ29lZmZpY2llbnRzOlxuICAgICAoSW50ZXJjZXB0KSAgICAgICAgIGxvZyhkb3NlKSAgICAgICAgICAgIHN1cHBWQyAgbG9nKGRvc2UpOnN1cHBWQyAgXG4gICAgICAgICAgMjAuNjYzICAgICAgICAgICAgIDkuMjU1ICAgICAgICAgICAgLTMuNzAwICAgICAgICAgICAgIDMuODQ1ICBcbiJ9 -->
+<pre><code>
+Call:
+lm(formula = len ~ log(dose) * supp, data = ToothGrowth)
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogaW5saW5lCi0tLQoKYGBge3IgbG9hZCBwYWNrYWdlcywgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5KGRwbHlyKQpkYXRhKCJUb290aEdyb3d0aCIpCmBgYAoKYGBge3IgcGxvdCBkYXRhfQpnZ3Bsb3QoZGF0YSA9IFRvb3RoR3Jvd3RoLCBtYXBwaW5nID0gYWVzKHggPSBkb3NlLCB5ID0gbGVuLCBjb2xvciA9IHN1cHApKSArIAogICAgc2NhbGVfeF9sb2cxMCgpICsKICAgIHNjYWxlX2NvbG91cl9icmV3ZXIocGFsZXR0ZSA9ICJTZXQxIikgKwogICAgZ2VvbV9wb2ludCgpICsgCiAgICBnZW9tX3Ntb290aChtZXRob2QgPSAibG0iKSArCiAgICBsYWJzKHRpdGxlID0gIkVmZmVjdCBvZiB2aXRhbWluIEMgc3VwcGxlbWVudGF0aW9uIG9uIHRvb3RoIGdyb3d0aCBpbiBndWluZWEgcGlncyIsIHggPSAibG9nIERvc2UgKG1nL2RheSkiLCB5ID0gIk9kb250b2JsYXN0IExlbmd0aCAobWljcm9ucykiKSArIAogICAgdGhlbWUocGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChoanVzdCA9IDAuNSkpCmBgYAoK</div>
+Coefficients:
+     (Intercept)         log(dose)            suppVC  log(dose):suppVC  
+          20.663             9.255            -3.700             3.845  </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYW5vdmEodG9vdGhfZml0KVxuXG5gYGAifQ== -->
+<pre class="r"><code>anova(tooth_fit)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiQW5hbHlzaXMgb2YgVmFyaWFuY2UgVGFibGVcblxuUmVzcG9uc2U6IGxlblxuICAgICAgICAgICAgICAgRGYgIFN1bSBTcSBNZWFuIFNxICBGIHZhbHVlICAgIFByKD5GKSAgICBcbmxvZyhkb3NlKSAgICAgICAxIDI0MDAuOTUgMjQwMC45NSAxNzMuNTEzNCA8IDIuMmUtMTYgKioqXG5zdXBwICAgICAgICAgICAgMSAgMjA1LjM1ICAyMDUuMzUgIDE0Ljg0MDQgMC4wMDAzMDMzICoqKlxubG9nKGRvc2UpOnN1cHAgIDEgICA3MS4wMiAgIDcxLjAyICAgNS4xMzI3IDAuMDI3MzY1OCAqICBcblJlc2lkdWFscyAgICAgIDU2ICA3NzQuODkgICAxMy44NCAgICAgICAgICAgICAgICAgICAgICAgXG4tLS1cblNpZ25pZi4gY29kZXM6ICAwIOKAmCoqKuKAmSAwLjAwMSDigJgqKuKAmSAwLjAxIOKAmCrigJkgMC4wNSDigJgu4oCZIDAuMSDigJgg4oCZIDFcbiJ9 -->
+<pre><code>Analysis of Variance Table
+
+Response: len
+               Df  Sum Sq Mean Sq  F value    Pr(&gt;F)    
+log(dose)       1 2400.95 2400.95 173.5134 &lt; 2.2e-16 ***
+supp            1  205.35  205.35  14.8404 0.0003033 ***
+log(dose):supp  1   71.02   71.02   5.1327 0.0273658 *  
+Residuals      56  774.89   13.84                       
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogaW5saW5lCi0tLQoKYGBge3IgbG9hZCBwYWNrYWdlcywgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5KGRwbHlyKQpkYXRhKCJUb290aEdyb3d0aCIpCmBgYAoKIyNFeGVjdXRpdmUgU3VtbWFyeQpIZXJlLCB3ZSBleGFtaW5lIHRoZSBlZmZlY3Qgb2Ygdml0YW1pbiBzdXBwbGVtZW50YXRpb24gb24gdG9vdGggZ3Jvd3RoIGluIGd1aW5lYSBwaWdzLiBWaXRhbWluIEMgaW5jcmVhc2VkIG9kb250b2JsYXN0IGxlbmd0aCBpbiBhIGRvc2UtZGVwZW5kZW50IGZhc2hpb24uIE9yYW5nZSBqdWljZSB3YXMgYSBtb3JlIGVmZmVjdGl2ZSBzb3VyY2Ugb2YgVml0YW1pbiBDIGF0IGxvd2VyIGRvc2VzLCBidXQgYXQgdGhlIGhpZ2hlc3QgZG9zZSB0aGVyZSB3YXMgbm8gZGlmZmVyZW5jZSBiZXR3ZWVuIG9yYW5nZSBqdWljZSB2cyBhc2NvcmJpYyBhY2lkLgoKCmBgYHtyIHF1aWNrIGxvb2sgYXQgdGhlIGRhdGF9CnN0cihUb290aEdyb3d0aCkKYGBgCgpgYGB7ciBzdW1tYXJ5fQpzdW1tYXJ5KFRvb3RoR3Jvd3RoKQpgYGAKCmBgYHtyIHVuaXF1ZSBkb3Nlc30KdW5pcXVlKFRvb3RoR3Jvd3RoJGRvc2UpCmBgYAoKCmBgYHtyIHBsb3QgZGF0YX0KZ2dwbG90KGRhdGEgPSBUb290aEdyb3d0aCwgbWFwcGluZyA9IGFlcyh4ID0gZG9zZSwgeSA9IGxlbiwgY29sb3IgPSBzdXBwKSkgKyAKICAgIHNjYWxlX3hfbG9nMTAoKSArCiAgICBzY2FsZV9jb2xvdXJfYnJld2VyKHBhbGV0dGUgPSAiU2V0MSIpICsKICAgIGdlb21fcG9pbnQoKSArIAogICAgZ2VvbV9zbW9vdGgobWV0aG9kID0gImxtIikgKwogICAgbGFicyh0aXRsZSA9ICJFZmZlY3Qgb2Ygdml0YW1pbiBDIHN1cHBsZW1lbnRhdGlvbiBvbiB0b290aCBncm93dGggaW4gZ3VpbmVhIHBpZ3MiLCB4ID0gImxvZyBEb3NlIChtZy9kYXkpIiwgeSA9ICJPZG9udG9ibGFzdCBMZW5ndGggKG1pY3JvbnMpIikgKyAKICAgIHRoZW1lKHBsb3QudGl0bGUgPSBlbGVtZW50X3RleHQoaGp1c3QgPSAwLjUpKQpgYGAKCmBgYHtyfQp0b290aF9maXQgPC0gbG0obGVuIH4gbG9nKGRvc2UpKnN1cHAsIGRhdGEgPSBUb290aEdyb3d0aCkKdG9vdGhfZml0CmBgYAoKYGBge3J9CmFub3ZhKHRvb3RoX2ZpdCkKYGBgCgo=</div>
 
 
 
