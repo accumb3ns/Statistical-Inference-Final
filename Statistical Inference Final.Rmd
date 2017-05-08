@@ -1,5 +1,5 @@
 ---
-title: "Statistical Inference Final Project"
+title: "The Central Limit Theorem: A Demonstration by Simulation"
 author: "Steven Vasquez-Grinnell"
 date: "May 3, 2017"
 output: pdf_document
@@ -11,64 +11,100 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 ```
 
+##Overview
+The Central Limit Theorem states that the distribution of the sums (and by extension, the means) of a sufficiently large number of randomly selected independent and identically distributed variables is approximately normal, even when the distribution these variables come from is not itself normal. As the number of samples increases to infinity, the sample mean will equal the mean of the underlying distribution, while the sample standard deviation will equal the standard deviation of the underlying distribution divided by the square root of the number of variables. Here, we will simulate this powerful theorem using the exponential distribution.
 
-```{r mean converging}
+##Simulation
+First, let us simulate taking the mean of 40 exponentials repeatedly from 1 all the way up to 100,000 times in quarter-log intervals.
+
+```{r simulation}
+## Set seed for reproducibility, then initialize variables to avoid growing them with every iteration
+## of the loops
 set.seed(122)
-overall_means <- data.frame(index = 1:21, overall_mean = 1:21)
+overall_means_and_variances <- data.frame(index = 1:21, overall_mean = 1:21, overall_variance = 1:21)
 all_the_means <- vector("list", length = 21)
 
+## Perform 21 rounds of simulation, from 1 to 100,000 samples in quarter-log intervals
 for (i in 1:21){
-  step <- 10^((i-1)/4)
-  tmp_means <- vector(length = step)
+  number_of_samples <- round(10^((i-1)/4))
+  tmp_means <- vector(length = number_of_samples)
   
-  for (j in 1:step) {
+  ## Repeatedly sample 40 exponentials with lambda = 0.2
+  for (j in 1:number_of_samples) {
     tmp_means[j] <- mean(rexp(40,0.2))
   }
   
+  ## Store the means in a list
   all_the_means[[i]]<-tmp_means
   
-  overall_means$index[i] <- step
-  overall_means$overall_mean[i] <- mean(tmp_means)
+  ## Store the mean and variance of the means in a data frame
+  overall_means_and_variances$index[i] <- number_of_samples
+  overall_means_and_variances$overall_mean[i] <- mean(tmp_means)
+  overall_means_and_variances$overall_variance[i] <- var(tmp_means)
+
 }
 ```
 
-```{r q1 means converge}
-ggplot(overall_means, mapping = aes(x = index, y = overall_mean, color = "red")) + 
+##Sample Mean versus Theoretical Mean
+Now that we've simulated repeated samplings from the exponential distribution, let's examine whether the mean of our simulation equals the theoretical mean of the exponential distribution,  \(\mu = 1/\lambda\). Since we used \(\lambda = 0.2\), the theoretical mean is 5.
+
+```{r q1 sample mean vs theoretical mean, echo=FALSE, fig.height=3, fig.width=4, fig.align="center"}
+ggplot(overall_means_and_variances, mapping = aes(x = index, y = overall_mean, color = "red")) + 
   scale_x_log10() + 
   geom_hline(yintercept = 5) + 
   geom_point() + 
   geom_line() + 
-  labs(title = "Sample Means of 40 Exponentials", x = "# of averages", y = "Mean") +
+  labs(title = "Fig 1: Sample Means of 40 Exponentials", x = "# of samples", y = "Mean") +
   guides(color = "none")
-
 ```
 
-```{r q2 means approx normal}
+Sure enough, as we increase the number of samples to 100,000, the mean converges to 5 as predicted by the central limit theorem.
 
+##Sample Variance versus Theoretical Variance
+Next, let's examine whether the variance we obtained for our simulation equals the theoretical variance, \(\sigma^2 = (\frac{1}{\lambda}/\sqrt{n})^2\). Again, with \(\lambda = 0.2\) and \(n = 40\), this gives \(\sigma^2 =\) `r (5/sqrt(40))^2`.
 
-means_df_list<- vector("list", length = 5)
-  for(i in 1:5) {
-    means_df_list[[i]] <- data.frame(row = 1:length(all_the_means[[i*4]]), means = all_the_means[[i*4]], cond = i)
-  }
-  
-means_count <- lapply(all_the_means,length)
-theoretical <- lapply(means_count, rnorm, mean = 5, sd = 5)
+```{r sample variance vs theoretical variance, echo=FALSE, fig.height=3, fig.align="center", fig.width=4, warning=FALSE}
+ggplot(overall_means_and_variances, mapping = aes(x = index, y = overall_variance, color = "red")) + 
+  scale_x_log10() + 
+  geom_hline(yintercept = (5/sqrt(40))^2) + 
+  geom_point() + 
+  geom_line() + 
+  labs(title = "Fig 2: Variance of 40 Exponentials", x = "# of samples", y = "Variance") +
+  guides(color = "none")
+```
 
-ggplot(means_df_list[[5]], mapping = aes(x = means, fill = cond)) +
+Indeed, as we increase the number of samples to 100,000, the simulated variance converges to 0.625, exactly as predicted by the central limit theorem.
+
+##Distribution
+Finally, let us examine the distribution of the largest simulation with 100,000 samples.
+
+```{r q2 sample distribution vs theoretical distribution, echo=FALSE, fig.align="center", fig.height=3, fig.width=4}
+simulation_df <- data.frame(means = all_the_means[[21]])
+
+ggplot(simulation_df, mapping = aes(x = means, fill = 1)) +
   coord_cartesian(xlim = c(2,8)) +
-  geom_density(alpha = 0.3) + 
-  geom_vline(aes(xintercept = 5)) +
-  stat_function(fun = dnorm, color = "red", args = list(mean = 5, sd = 5/sqrt(40))) +
-  guides(fill = "none")
+  geom_density(alpha = 0.3, mapping = aes(color = 3)) + 
+  geom_vline(aes(xintercept = 5, color = 1)) +
+  stat_function(fun = dnorm, color = "black", args = list(mean = 5, sd = 5/sqrt(40))) +
+  guides(fill = "none", color = "none") +
+  labs(title = "Fig 3: Distribution: Sample vs Theoretical", x = "Mean")
 
 ```
 
+In figure 3, we can see an ideal normal curve with mean of 5 and standard deviation of \(\sigma = (\frac{1}{0.2}/\sqrt{40}) = \) `r (5/sqrt(40))` in black. Once again, we can see that just as predicted by the central limit theorem, a large number of sample means from the exponential distribution produces a curve (in blue) that very nearly approximates the normal distribution. 
 
-```{r q-q plot}
-ggplot(means_df_list[[5]], mapping = aes(sample = means)) +
+To examine this further, we can use a q-q plot to examine the distribution of our sample means. In this plot, we would expect perfectly normally distributed data to fall on a diagonal line with an x intercept equal to the population mean of 5, and a slope equal to the standard deviation of `r (5/sqrt(40))`.
+
+```{r q-q plot, echo=FALSE, fig.height=3, fig.width=4, fig.align="center"}
+ggplot(simulation_df, mapping = aes(sample = means)) +
   coord_cartesian(ylim = c(1,10), xlim = c(-5.5,5.5)) +
-  geom_qq() +
-  geom_abline(intercept = mean(theoretical[[21]]), slope = sd(theoretical[[21]])/sqrt(40))
+  geom_qq(mapping = aes(color = 3)) +
+  geom_abline(intercept = 5, slope = 5/sqrt(40)) + 
+  guides(color = "none") +
+  labs(title = "Fig 4: Q-Q Plot of Sample vs Theoretical", x = "Mean")
 
 ```
 
+Although it is not a perfect fit, the sample means (blue points) mostly fall along the theoretical line (black), indicating that the distribution approximates a normal distribution, deviating primarily toward the extreme quantiles.
+
+In conclusion, our simulation exercise demonstrates the power of the central limit theorem in predicting the mean, variance, and distribution of a large number of samples from any distribution.
