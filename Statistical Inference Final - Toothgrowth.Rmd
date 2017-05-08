@@ -1,23 +1,25 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "ToothGrowth: Examining the Effect of Vitamin C Supplementation on Odontoblast Length"
+output: pdf_document
 editor_options: 
   chunk_output_type: inline
 ---
 
-```{r load packages, message=FALSE, warning=FALSE}
+##Executive Summary
+Here, we examine the effect of vitamin supplementation on a proxy measure of tooth growth in guinea pigs. Both sources of vitamin C tested, orange juice and ascorbic acid, dose-dependently increased odontoblast length. Although at lower vitamin C-equivalent doses orange juice was more effective than ascorbic acid at increasing odontoblast length, both supplements were equally effective at the highest dose.
+
+##Explanatory Data Analysis and Basic Dataset Summary
+```{r load packages, include=FALSE}
 library(ggplot2)
-library(dplyr)
 data("ToothGrowth")
 ```
-
-##Executive Summary
-Here, we examine the effect of vitamin supplementation on tooth growth in guinea pigs. Vitamin C increased odontoblast length in a dose-dependent fashion. Orange juice was a more effective source of Vitamin C at lower doses, but at the highest dose there was no difference between orange juice vs ascorbic acid.
-
+After loading the ToothGrowth dataset and ggplot2 for visualization, let's examine the data using the str function.
 
 ```{r quick look at the data}
 str(ToothGrowth)
 ```
+
+We see a simple data frame with 3 variables. According to the annotation of this dataset, 'len' is the length of odontoblast cells of 60 guinea pigs at 3 dose levels (dose) and 2 delivery methods (supp), n = 10 each. We can further see the distribution of the variables using the summary function.
 
 ```{r summary}
 summary(ToothGrowth)
@@ -27,16 +29,24 @@ summary(ToothGrowth)
 unique(ToothGrowth$dose)
 ```
 
+As seen above, 'supp' is a factor variable taking one of 2 forms, OJ (orange juice) or VC (ascorbic acid, also known as vitamin C). Although specific doses were administered (0.5, 1, and 2 mg/day), 'dose' is a continuous numeric variable. 'len' ranges from 4.2 microns up to 33.9 microns, with a mean of 18.8 and median of 19.25. Let's plot the data and see how the different experimental conditions affected length.
+
+Importantly - this is dose-response data, which is traditionally visualized on a semi-log plot; we can tell ggplot2 to log10 transform our data.
 
 ```{r plot data}
 ggplot(data = ToothGrowth, mapping = aes(x = dose, y = len, color = supp)) + 
-    scale_x_log10() +
+    scale_x_log10(breaks = c(0.5, 1, 2)) +
     scale_colour_brewer(palette = "Set1") +
     geom_point() + 
     geom_smooth(method = "lm") +
-    labs(title = "Effect of vitamin C supplementation on tooth growth in guinea pigs", x = "log Dose (mg/day)", y = "Odontoblast Length (microns)") + 
+    labs(title = "Effect of vitamin C supplementation on odontoblast length in guinea pigs", x = "log Dose (mg/day)", y = "Odontoblast Length (microns)") + 
     theme(plot.title = element_text(hjust = 0.5))
 ```
+
+
+
+##Statistical Inference
+Generally, dose-response data is fit using a probit model or using nonlinear regression; however, with so few points and the assignment instructions, we will use a simple linear model. Assuming we are between 15% and 85% of maximal response, this linear fit is a fair representation as the sigmoidal curve is roughly linear in this range.  
 
 ```{r}
 tooth_fit <- lm(len ~ log(dose)*supp, data = ToothGrowth)
@@ -46,4 +56,3 @@ tooth_fit
 ```{r}
 anova(tooth_fit)
 ```
-
