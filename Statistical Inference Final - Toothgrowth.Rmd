@@ -29,9 +29,9 @@ summary(ToothGrowth)
 unique(ToothGrowth$dose)
 ```
 
-As seen above, 'supp' is a factor variable taking one of 2 forms, OJ (orange juice) or VC (ascorbic acid, also known as vitamin C). Although specific doses were administered (0.5, 1, and 2 mg/day), 'dose' is a continuous numeric variable. 'len' ranges from 4.2 microns up to 33.9 microns, with a mean of 18.8 and median of 19.25. Let's plot the data and see how the different experimental conditions affected length.
+As seen above, 'supp' is a factor variable taking one of 2 forms, OJ (orange juice) or VC (ascorbic acid, also known as vitamin C). Although 'dose' is a continuous numeric variable, only 3 doses were actually administered - 0.5, 1, and 2 mg/day. 'len' ranges from 4.2 microns up to 33.9 microns, with a mean of 18.8 and median of 19.25. Now, let's plot the data and see how the different experimental conditions affected length.
 
-Importantly - this is dose-response data, which is traditionally visualized on a semi-log plot; we can tell ggplot2 to log10 transform our data.
+Importantly - this is dose-response data and on a linear scale, it is described not by a straight line but a rectangular hyperbola as the reponse reaches a ceiling at high doses; however, when the x-axis is log transformed, it appears as a sigmoidal, or s-shaped, curve and the region from about 15%-85% of maximal response is approximately linear. Therefore, we will tell ggplot2 to log10 transform our data and plot a linear regression line to the data. Note that with only 3 doses, it is not possible to know what the maximal response is, and we could be outside of the linear range. Still, this is much better than trying to fit a linear model to the original data which we KNOW is not linear.
 
 ```{r plot data}
 ggplot(data = ToothGrowth, mapping = aes(x = dose, y = len, color = supp)) + 
@@ -43,15 +43,15 @@ ggplot(data = ToothGrowth, mapping = aes(x = dose, y = len, color = supp)) +
     theme(plot.title = element_text(hjust = 0.5))
 ```
 
-
-
 ##Statistical Inference
-Generally, dose-response data is fit using a probit model or using nonlinear regression; however, with so few points and the assignment instructions, we will use a simple linear model. Assuming we are between 15% and 85% of maximal response, this linear fit is a fair representation as the sigmoidal curve is roughly linear in this range.  
+These days dose-response data is generally fit using using nonlinear regression; however, based on the instructions for this assignment, we will use a linear model. Assuming we are between 15% and 85% of maximal response, this linear fit is a fair representation as the sigmoidal curve is roughly linear in this range; with only 3 doses tested, however, we can't be certain that this assumption is correct. In fact, since the highest dose is for Orange Juice supplementation, it is likely that we've already reached a saturation point in response.
 
 ```{r}
 tooth_fit <- lm(len ~ log(dose)*supp, data = ToothGrowth)
 tooth_fit
 ```
+
+
 
 ```{r}
 anova(tooth_fit)
