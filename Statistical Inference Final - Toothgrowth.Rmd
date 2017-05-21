@@ -39,20 +39,22 @@ ggplot(data = ToothGrowth, mapping = aes(x = dose, y = len, color = supp)) +
     scale_colour_brewer(palette = "Set1") +
     geom_point() + 
     geom_smooth(method = "lm") +
-    labs(title = "Effect of vitamin C supplementation on odontoblast length in guinea pigs", x = "log Dose (mg/day)", y = "Odontoblast Length (microns)") + 
+    labs(title = "Effect of vitamin C supplementation on odontoblast length in guinea pigs", x = "Dose (mg/day)", y = "Odontoblast Length (microns)") + 
     theme(plot.title = element_text(hjust = 0.5))
 ```
+Importantly, we see that at the lowest equivalent dose, the 95% confidence intervals for orange juice (OJ) and ascorbic acid (VC) are non-overlapping, suggesting that orange juice is a superior supplement at this dose; however, at the highest dose the confidence intervals overlap - suggesting that there is no difference between supplement type when dose is high enough.
 
 ##Statistical Inference
-These days dose-response data is generally fit using using nonlinear regression; however, based on the instructions for this assignment, we will use a linear model. Assuming we are between 15% and 85% of maximal response, this linear fit is a fair representation as the sigmoidal curve is roughly linear in this range; with only 3 doses tested, however, we can't be certain that this assumption is correct. In fact, since the highest dose is for Orange Juice supplementation, it is likely that we've already reached a saturation point in response.
+These days dose-response data is generally fit using using nonlinear regression; however, based on the instructions for this assignment, we will use a linear model on the log-transformed data. Assuming we are between 15% and 85% of maximal response, this is a fair representation as the sigmoidal curve is roughly linear in this range; with only 3 doses tested, however, we can't be certain that this assumption is correct. In fact, since the highest dose has plateaued for Orange Juice supplementation, it is likely that we've already reached a saturation point in response.
 
+Assumptions aside, here are the details of the model:
 ```{r}
 tooth_fit <- lm(len ~ log(dose)*supp, data = ToothGrowth)
 tooth_fit
 ```
 
-
-
+And the ANOVA table for the fit is as follows:
 ```{r}
 anova(tooth_fit)
 ```
+Breaking down the output, we see significant main effects for both log(dose) as well as the type of supplement; that is, the effect of vitamin C supplementation is dose-dependent and there is a significant difference between vitamin C powder and orange juice (which likely contains other pro-tooth-growth nutrients). However, there is also a significant interaction effect between log(dose) and supplement type, and looking at the graph we can say that the increased potency of orange juice over pure vitamin C is overcome when doses are high enough to saturate response. In conclusion, orange juice is a more potent supplement with regard to tooth growth - but if the dose is high enough, pure vitamin C is just as good.
